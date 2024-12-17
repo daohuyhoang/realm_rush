@@ -6,11 +6,23 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     [SerializeField] Vector2Int gridSize;
+    
     Dictionary<Vector2Int, Node> gird = new Dictionary<Vector2Int, Node>();
+    public Dictionary<Vector2Int, Node> Gird { get { return gird; } } 
 
     void Awake()
     {
         CreateGird();
+    }
+
+    public Node GetNode(Vector2Int coordinates)
+    {
+        if (gird.ContainsKey(coordinates))
+        {
+            return gird[coordinates];
+        }
+
+        return null;
     }
 
     void CreateGird()
