@@ -6,9 +6,11 @@ using UnityEngine;
 public class GridManager : MonoBehaviour
 {
     [SerializeField] Vector2Int gridSize;
+    [SerializeField] int unityGridSize = 10;
     
-    Dictionary<Vector2Int, Node> gird = new Dictionary<Vector2Int, Node>();
-    public Dictionary<Vector2Int, Node> Gird { get { return gird; } } 
+    Dictionary<Vector2Int, Node> grid = new Dictionary<Vector2Int, Node>();
+    public Dictionary<Vector2Int, Node> Grid { get { return grid; } } 
+    public int UnityGridSize { get { return unityGridSize; } }
 
     void Awake()
     {
@@ -17,12 +19,38 @@ public class GridManager : MonoBehaviour
 
     public Node GetNode(Vector2Int coordinates)
     {
-        if (gird.ContainsKey(coordinates))
+        if (grid.ContainsKey(coordinates))
         {
-            return gird[coordinates];
+            return grid[coordinates];
         }
 
         return null;
+    }
+
+    public void BlockNode(Vector2Int coordinates)
+    {
+        if (grid.ContainsKey(coordinates))
+        {
+            grid[coordinates].isWalkable = false;
+        }
+    }
+
+    public Vector2Int GetCoordinatesFromPosition(Vector3 position)
+    {
+        Vector2Int coordinates = new Vector2Int();
+        coordinates.x = Mathf.RoundToInt(position.x / unityGridSize);
+        coordinates.y = Mathf.RoundToInt(position.z / unityGridSize);
+        
+        return coordinates;
+    }
+
+    public Vector3 GetPositionFromCoordinates(Vector2Int coordinates)
+    {
+        Vector3 position = new Vector3();
+        position.x = coordinates.x * unityGridSize;
+        position.z = coordinates.y * unityGridSize;
+        
+        return position;
     }
 
     void CreateGird()
@@ -32,8 +60,7 @@ public class GridManager : MonoBehaviour
             for (int y = 0; y < gridSize.y; y++)
             {
                 Vector2Int coordinates = new Vector2Int(x, y);
-                gird.Add(coordinates, new Node(coordinates, true));
-                Debug.Log(gird[coordinates].coordinates + "=" + gird[coordinates].isWalkable);
+                grid.Add(coordinates, new Node(coordinates, true));
             }
         }
     }
