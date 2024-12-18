@@ -17,9 +17,8 @@ public class EnemyMover : MonoBehaviour
     const string PATH_TAG = "Path";
     void OnEnable()
     {
-        FindPath();
+        RecalculatePath(true);
         ReturnToStart();
-        StartCoroutine(FollowPath());    
     }
 
     void Awake()
@@ -29,10 +28,21 @@ public class EnemyMover : MonoBehaviour
         pathFinder = FindObjectOfType<PathFinder>();
     }
 
-    void FindPath()
+    void RecalculatePath(bool resetPath)
     {
+        Vector2Int coordinates = new Vector2Int();
+        if (resetPath)
+        {
+            coordinates = pathFinder.StartCoordinates;
+        }
+        else
+        {
+            coordinates = gridManager.GetCoordinatesFromPosition(transform.position);
+        }
+        StopAllCoroutines();
         path.Clear();
-        path = pathFinder.GetNewPath();
+        path = pathFinder.GetNewPath(coordinates);
+        StartCoroutine(FollowPath());
     }
 
     void ReturnToStart()
