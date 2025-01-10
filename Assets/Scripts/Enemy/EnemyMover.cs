@@ -1,58 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Numerics;
 using UnityEngine;
+using Vector3 = UnityEngine.Vector3;
 
 [RequireComponent(typeof(Enemy))]
 public class EnemyMover : MonoBehaviour
 {
-    [Range(0f, 5f)]
-    [SerializeField] float speed = 1f;
-
+    [SerializeField] [Range(0f, 5f)] float speed = 1f; 
+    
     List<Node> path = new List<Node>();
-
+    
     Enemy enemy;
     GridManager gridManager;
-    PathFinder pathFinder;
-    const string PATH_TAG = "Path";
+    PathFinder pathfinder;
+
     void OnEnable()
     {
-        RecalculatePath(true);
         ReturnToStart();
+        RecalculatePath(true);
     }
 
     void Awake()
     {
         enemy = GetComponent<Enemy>();
         gridManager = FindObjectOfType<GridManager>();
-        pathFinder = FindObjectOfType<PathFinder>();
+        pathfinder = FindObjectOfType<PathFinder>();
     }
 
     void RecalculatePath(bool resetPath)
     {
         Vector2Int coordinates = new Vector2Int();
-        if (resetPath)
+
+        if(resetPath)
         {
-            coordinates = pathFinder.StartCoordinates;
+            coordinates = pathfinder.StartCoordinates;
         }
         else
         {
             coordinates = gridManager.GetCoordinatesFromPosition(transform.position);
         }
+
         StopAllCoroutines();
         path.Clear();
-        path = pathFinder.GetNewPath(coordinates);
+        path = pathfinder.GetNewPath(coordinates);
         StartCoroutine(FollowPath());
     }
 
     void ReturnToStart()
     {
-        transform.position = gridManager.GetPositionFromCoordinates(pathFinder.StartCoordinates);
+        transform.position = gridManager.GetPositionFromCoordinates(pathfinder.StartCoordinates);
+    }
+
+    void FinishPath()
+    {
+        enemy.StealGold();
+        gameObject.SetActive(false);
     }
     
     IEnumerator FollowPath()
     {
-        for (int i = 0; i < path.Count; i++)
+        for(int i = 1; i < path.Count; i++) 
         {
             Vector3 startPosition = transform.position;
             Vector3 endPosition = gridManager.GetPositionFromCoordinates(path[i].coordinates);
@@ -67,12 +75,7 @@ public class EnemyMover : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
         }
+        
         FinishPath();
-    }
-
-    void FinishPath()
-    {
-        gameObject.SetActive(false);
-        enemy.StealGold();
     }
 }

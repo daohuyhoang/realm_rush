@@ -14452,7 +14452,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea295e04f544c7cbdbfa18a88fac495, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startCoordinates: {x: 0, y: 0}
+  startCoordinates: {x: 13, y: 1}
   destinationCoordinates: {x: 14, y: 7}
 --- !u!4 &1005578543 stripped
 Transform:
